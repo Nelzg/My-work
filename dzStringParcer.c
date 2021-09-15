@@ -24,6 +24,6 @@ int main() {
 		}
 		i++;
 	}
-	strig[i] = '\0';
+	strig[i + 1] = '\0';
 	return 0;
 }
