@@ -12,7 +12,7 @@ int StringSplit(char *string, char *delimiters, char* **token, int* *tokensCount
 			*tokensCount = (int *) realloc (*tokensCount, size * sizeof(int));
 			*token = (char **) realloc (*token, size * sizeof(char *));		
                 }
-		*(*tokensCount+i) = strlen(*(*token + i));
+		*(*tokensCount + i) = strlen(*(*token + i));
 		i++;
 	}
 	return i;
@@ -55,6 +55,9 @@ int main() {
 	for (i = 0; i < n; i++) {
 		printf("%s , %d\n", token[i], tokensCount[i]);
 	}
-
+	free(string);
+	free(delimiters);
+	free(tokensCount);
+	free(token);
 	return 0;
 }
