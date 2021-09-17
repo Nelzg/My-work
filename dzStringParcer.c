@@ -15,6 +15,7 @@ int StringSplit(char *string, char *delimiters, char **token, int *tokensCount) 
 		tokensCount[i] = strlen(token[i]);
 		i++;
 	}
+	//dont forget to free
 	return i;
 }
 
@@ -55,6 +56,6 @@ int main() {
 	for (i = 0; i < n; i++) {
 		printf("%s , %d\n", token[i], tokensCount[i]);
 	}
-
+	//dont forget to free
 	return 0;
 }
