@@ -2,17 +2,17 @@
 #include <string.h>
 #include <stdlib.h>
 
-int StringSplit(char *string, char *delimiters, char **token, int *tokensCount) {
+int StringSplit(char *string, char *delimiters, char* **token, int* *tokensCount) {
 	int i = 0;
 	char *saveToken = string;
 	int size = 3;
-	while (token[i] = strtok_r(saveToken, delimiters, &saveToken)) {
+	while (*(*token + i) = strtok_r(saveToken, delimiters, &saveToken)) {
 		if (i == (size - 1)) {
 			size = size + 3;
-			tokensCount = (int *) realloc (tokensCount, size * sizeof(int));
-			token = (char **) realloc (token, size * sizeof(char *));		
+			*tokensCount = (int *) realloc (*tokensCount, size * sizeof(int));
+			*token = (char **) realloc (*token, size * sizeof(char *));		
                 }
-		tokensCount[i] = strlen(token[i]);
+		*(*tokensCount+i) = strlen(*(*token + i));
 		i++;
 	}
 	return i;
@@ -51,7 +51,7 @@ int main() {
         }
 	delimiters[i] = '\0';
 
-	n = StringSplit(string, delimiters, token, tokensCount);
+	n = StringSplit(string, delimiters, &token, &tokensCount);
 	for (i = 0; i < n; i++) {
 		printf("%s , %d\n", token[i], tokensCount[i]);
 	}
