@@ -12,12 +12,15 @@ int main() {
 	while (i < N) {
 		i++;
 		pid_t pid = fork();
-		if (pid == 0){	
-			printf("Child process %d with father %d\n", getpid(),getppid());
+		if (pid == 0){
+			if ((getpid()-main_pid)>N){
+				kill(pid,SIGINT);
+			}
+			printf("Child process %d has been born\n", getpid()-main_pid);
 		}
 		else {
-		//	printf("Father process %d with father %d waits\n", pid,getppid());
 			wait(status);
+			printf("%d:My child died\n", getpid()-main_pid);
 		}	
 	}
 	return 0;
