@@ -5,25 +5,27 @@
 
 void NForks(int N, int i) {
 	int status;
-	pid_t pid = fork();
-	if ((pid == 0)&&(i < N)) {
-		i++;
-		printf("Child %d has been born With father %d\n", getpid(),getppid());
-		NForks(N,i);
-	}
-	else {
-		if ((pid==0)&&(i == N)) {
-	//		kill(pid,SIGINT);
-	//	if ((pid == 0) && (i == N-1)) {
-			printf("I am the last one - %d\n", getpid());
+	if (N >= i) {
+		pid_t pid = fork();
+		if ((pid == 0)&&(i < N)) {
+			i++;
+			printf("Child %d has been born With father %d\n", getpid(),getppid());
+			NForks(N,i);
 		}
 		else {
-			printf("%d - I am waiting My father is %d\n", getpid(), getppid());
-			wait(&status);
-			printf("Oh no my son died - %d\n", getpid());
+			if ((pid==0)&&(i == N)) {
+				printf("I am the last one - %d\n", getpid());
+			}
+			else {
+				printf("%d - I am waiting My father is %d\n", getpid(), getppid());
+				wait(&status);
+				printf("Oh no my son died - %d\n", getpid());
+			}
 		}
 	}
-		
+	else {
+		printf("%d I am the only process\n", getpid());
+	}
 }
 
 int main() {
