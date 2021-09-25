@@ -12,10 +12,10 @@ void NForks(int N, int i) {
 		NForks(N,i);
 	}
 	else {
-		if ((pid==0)&&(i == N))
-			kill(pid,SIGINT);
-		if ((pid == 0) && (i == N-1)) {
-			printf("I am the last one - %d", getpid());
+		if ((pid==0)&&(i == N)) {
+	//		kill(pid,SIGINT);
+	//	if ((pid == 0) && (i == N-1)) {
+			printf("I am the last one - %d\n", getpid());
 		}
 		else {
 			printf("%d - I am waiting My father is %d\n", getpid(), getppid());
@@ -32,6 +32,6 @@ int main() {
 	int main_pid = getpid();
 	scanf("%d", &N);
 	i = 1;
-	NForks(N,i);
+	NForks(N-1,i);
 	return 0;
 }
