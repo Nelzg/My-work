@@ -3,25 +3,35 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+void NForks(int N, int i) {
+	int status;
+	pid_t pid = fork();
+	if ((pid == 0)&&(i < N)) {
+		i++;
+		printf("Child %d has been born With father %d\n", getpid(),getppid());
+		NForks(N,i);
+	}
+	else {
+		if ((pid==0)&&(i == N))
+			kill(pid,SIGINT);
+		if ((pid == 0) && (i == N-1)) {
+			printf("I am the last one - %d", getpid());
+		}
+		else {
+			printf("%d - I am waiting My father is %d\n", getpid(), getppid());
+			wait(&status);
+			printf("Oh no my son died - %d\n", getpid());
+		}
+	}
+		
+}
+
 int main() {
 	int N,i;
-	int* status =NULL;
+	
 	int main_pid = getpid();
 	scanf("%d", &N);
 	i = 1;
-	while (i < N) {
-		i++;
-		pid_t pid = fork();
-		if (pid == 0){
-			if ((getpid()-main_pid)>N){
-				kill(pid,SIGINT);
-			}
-			printf("Child process %d has been born\n", getpid()-main_pid);
-		}
-		else {
-			wait(status);
-			printf("%d:My child died\n", getpid()-main_pid);
-		}	
-	}
+	NForks(N,i);
 	return 0;
 }
