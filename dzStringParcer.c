@@ -2,73 +2,59 @@
 #include <string.h>
 #include <stdlib.h>
 
-int StringSplit(char *string, char *delimiters, char* **token, int* *tokensCount) {
+void StringSplit(char *string, char *delimiters, char* **token, int *tokensCount) {
 	int i = 0;
 	char *saveToken = string;
 	int size = 3;
 	while (*(*token + i) = strtok_r(saveToken, delimiters, &saveToken)) {
 		if (i == (size - 1)) {
-			// обычно в аналогичных случая используют множитель в интервале [1.5, 2.0] вместо прибавления константы. можете оставить и так.
 			size = size + 3;
-			*tokensCount = (int *) realloc (*tokensCount, size * sizeof(int));
 			*token = (char **) realloc (*token, size * sizeof(char *));		
                 }
-		*(*tokensCount + i) = strlen(*(*token + i));
 		i++;
+		(*tokensCount)++;
 	}
-	return i;
+}
+
+void getString(char** string) {
+	int i = 0;
+	int size = 3;
+        while ((*(*string + i) = getchar()) != '\n' ) {
+                if (i == (size - 1)) {
+                        size = size + 3;
+                        *string = (char *) realloc (*string, size * sizeof(char));
+                }
+                i++;
+        }
+        *(*string + i) = '\0';
 }
 
 int main() {
 	char *string;
 	char *delimiters;
 	char **token;
-	int *tokensCount;
+	int tokensCount;
 	int i,n,size;
 	size = 3;	
+	tokensCount = 0;
+	//I thought of tokensCount as array of sizes of each token
 
 	string = (char *) malloc (size * sizeof(char));
 	token = (char **) malloc (size * sizeof(char *));
-	// TODO: tokensCount вам не особо нужен (см. комментарий ниже)
-	tokensCount = (int *) malloc (size * sizeof(int));
 	delimiters = (char *) malloc (size * sizeof(char));
 
-	/*
-	TODO: дважды ниже продублировали один и тот же код. Вынесите его в отдельную ф-ю ReadString.
-	Первый вызов malloc (char *) malloc (size * sizeof(char)) можно в неё спрятать. А в main просто дважды это ф-ю позовёте для 
-	string и delimiters
-	*/
-	i = 0;
-	while ((string[i] = getchar()) != '\n' ) {
-		if (i == (size - 1)) {
-			size = size + 3;
-			string = (char *) realloc (string, size * sizeof(char));
-		}
-		i++;
-	}
-	string[i] = '\0';
+	getString(&string);
+	getString(&delimiters);
+	
+	StringSplit(string, delimiters, &token, &tokensCount);
 
-	i = 0;
-	while ((delimiters[i] = getchar()) != '\n' ) {
-                if (i == (size - 1)) {
-			size = size + 3;
-                        delimiters = (char *) realloc (delimiters, size * sizeof(char));
-                }
-                i++;
-        }
-	delimiters[i] = '\0';
-
-	/*
-	TODO: В вашем случае split возвращает число, которое и означает количество "слов" (aka token'ов), на которое строчка разбилась.
-	Т.е. 4й параметр вам не нужен. Давайте уберём его.
-	*/
-	n = StringSplit(string, delimiters, &token, &tokensCount);
-	for (i = 0; i < n; i++) {
-		printf("%s , %d\n", token[i], tokensCount[i]);
+	printf("%d\n", tokensCount);
+	for (i = 0; i < tokensCount; i++) {
+		printf("%s\n", token[i]);
 	}
+
 	free(string);
 	free(delimiters);
-	free(tokensCount);
 	free(token);
 	return 0;
 }
