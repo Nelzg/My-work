@@ -7,10 +7,9 @@ void NForks(int N, int i) {
 	int status;
 	if (N >= i) {
 		pid_t pid = fork();
-		if ((pid == 0)&&(i < N)) {
-			i++;
-			printf("Child %d has been born With father %d\n", getpid(),getppid());
-			NForks(N,i);
+		if (pid == 0 && i < N) {
+			printf("Child %d has been born With father %d\n", getpid(), getppid());
+			NForks(N, i++);
 		}
 		else {
 			if ((pid==0)&&(i == N)) {
@@ -29,11 +28,11 @@ void NForks(int N, int i) {
 }
 
 int main() {
-	int N,i;
+	int N, I;
 	
 	int main_pid = getpid();
 	scanf("%d", &N);
-	i = 1;
-	NForks(N-1,i);
+	I = 1;
+	NForks(N-1, I);
 	return 0;
 }
