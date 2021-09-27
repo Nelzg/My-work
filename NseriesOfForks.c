@@ -7,12 +7,9 @@ void NForks(int N, int i) {
 	int status;
 	if (N >= i) {
 		pid_t pid = fork();
-		// лишние скобки: достаточно писать if (pid == 0 && i < N)
-		if ((pid == 0)&&(i < N)) {
-			i++;
-			printf("Child %d has been born With father %d\n", getpid(),getppid());
-			// ставьте пробел после запятых: NForks(N, i); Можно было бы написать NForks(N, i + 1) просто.
-			NForks(N,i);
+		if (pid == 0 && i < N) {
+			printf("Child %d has been born With father %d\n", getpid(), getppid());
+			NForks(N, i++);
 		}
 		else {
 			if ((pid==0)&&(i == N)) {
@@ -31,12 +28,11 @@ void NForks(int N, int i) {
 }
 
 int main() {
-	// называйте переменные в одном стиле, т.е. например все со строчной буквы: int n, i;	
-	int N,i;
+	int N, I;
 	
 	int main_pid = getpid();
 	scanf("%d", &N);
-	i = 1;
-	NForks(N-1,i);
+	I = 1;
+	NForks(N-1, I);
 	return 0;
 }
