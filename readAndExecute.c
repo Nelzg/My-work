@@ -7,6 +7,8 @@
 #include <unistd.h>
 #include <time.h>
 
+//it is not ready but i tried
+
 void StringSplit(char *string, char* **token, int *tokensCount) {
         int i = 0;
 	char* delimiter = "\n";
