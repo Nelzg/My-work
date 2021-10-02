@@ -84,14 +84,16 @@ int main() {
 	
 	clock_t clock_main = clock();
 	for (i = 0; i < NumbCommands; i++) {
-		pid_t pid = fork();
-		if (pid == 0) {
-			execvp(*A[i].Name, A[i].Parts);
-			printf("wakanda"); 
-			exit(0);
-		}
-		else {
+		while ((clock() - clock_main)/CLOCKS_PER_SEC <= 5) {
+			pid_t pid = fork();
+			if (pid == 0) {
+				execvp(*A[i].Name, A[i].Parts);
+				printf("wakanda"); 
+				exit(0);
+			}
+			else {
 				
+			}
 		}
 	}
 	return 0;
