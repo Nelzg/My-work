@@ -13,39 +13,39 @@ void *mythread1(void* dummy) {
 	int fd_fifo = open(S_1fifo, O_WRONLY);
 	char buf[100];
 	while (1) {
-        gets(buf);
-    	write(fd_fifo, buf, 100);
-    }
+        	gets(buf);
+    		write(fd_fifo, buf, 100);
+    	}
 }	
 
 void *mythread2(void* dummy) {
 	int fd_fifo = open(S_2fifo, O_RDONLY);
 	char buf[100];
-    while (1) {
-        read(fd_fifo, buf, 100);
-        printf("%s\n", buf);
-    }
+    	while (1) {
+        	read(fd_fifo, buf, 100);
+        	printf("%s\n", buf);
+    	}
 }	
 
 void *mythread3(void* dummy) {
 	int fd_fifo = open(S_2fifo, O_WRONLY);
 	char buf[100];
 	while (1) {
-        gets(buf);
-    	write(fd_fifo, buf, 100);
-    }
+        	gets(buf);
+    		write(fd_fifo, buf, 100);
+    	}
 }	
 
 void *mythread4(void* dummy) {
 	int fd_fifo = open(S_1fifo, O_RDONLY);
 	char buf[100];
-    while (1) {
-        read(fd_fifo, buf, 100);
-        printf("%s\n", buf);
-    }
+    	while (1) {
+        	read(fd_fifo, buf, 100);
+        	printf("%s\n", buf);
+    	}
 }	
 
-void conversationBetweenConsoles1(char* S_1fifo, char* S_2fifo, char *buf) {
+void conversationBetweenConsoles1() {
 	pthread_t thid1, thid2;
 	int result1 = pthread_create(&thid1, (pthread_attr_t *)NULL, mythread1, NULL);
 	int result2 = pthread_create(&thid2, (pthread_attr_t *)NULL, mythread2, NULL);
@@ -53,7 +53,7 @@ void conversationBetweenConsoles1(char* S_1fifo, char* S_2fifo, char *buf) {
 	pthread_join(thid2, (void **)NULL);
 }
 
-void conversationBetweenConsoles2(char* S_1fifo, char* S_2fifo, char *buf) {
+void conversationBetweenConsoles2() {
 	pthread_t thid1, thid2;
 	int result1 = pthread_create(&thid1, (pthread_attr_t *)NULL, mythread3, NULL);
 	int result2 = pthread_create(&thid2, (pthread_attr_t *)NULL, mythread4, NULL);
