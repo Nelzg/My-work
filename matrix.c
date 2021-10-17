@@ -1,26 +1,28 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
-#define N 4
+#define N 3
+#define RANGE 20
 
-void getHor(int** buf,int** matrix, int i) {
+void getHor(double** Hor,double** matrix, int i) {
     int k = 0;
     for (int j = 0; j < N; j++) {
-        *(*buf+k) = *(*matrix + i * N + j);
+        *(*Hor + k) = *(*matrix + i * N + j);
         k++;
     }
 }
 
-void getVert(int** buf,int** matrix, int j) {
+void getVert(double** Vert,double** matrix, int j) {
     int k = 0;
     for (int i = 0; i < N; i++) {
-        *(*buf+k) = *(*matrix + i * N + j);
+        *(*Vert + k) = *(*matrix + i * N + j);
         k++;
     }
 }
 
-int multpVect(int* Hor, int* Vert ) {
+int multpVect(double* Hor, double* Vert ) {
     int n = 0;
     for (int j = 0; j < N; j++) {
         n = n + Hor[j] * Vert[j];
@@ -29,43 +31,50 @@ int multpVect(int* Hor, int* Vert ) {
 }
 
 int main() {
-    int** a;
-    int** b;
-    int** c;
-    int* Vert;
-    int* Hor;
+    double** matrix_1;
+    double** b; //just to make it work properly
+    double** matrix_2;
+    double** matrix_3;
+    double** e; //just to make it work properly
+    double* Vert;
+    double* Hor;
     int i, j, k;
     k = 1;
-    a = (int**) calloc(N, sizeof(int*));
-    b = (int**) calloc(N, sizeof(int*));
-    c = (int**) calloc(N, sizeof(int*));
-    Hor = (int*) calloc(N, sizeof(int));
-    Vert = (int*) calloc(N, sizeof(int));
+    matrix_1 = (double**) calloc(N, sizeof(double*));
+    b = (double**) calloc(N, sizeof(double*)); //just to make it work properly
+    matrix_2 = (double**) calloc(N, sizeof(double*));
+    matrix_3 = (double**) calloc(N, sizeof(double*));
+    e = (double**) calloc(N, sizeof(double*)); //just to make it work properly (the problem is that without them while using getVert(&Vert, matrix_2, j) it writes down wrong variables in Vert or )
+    Hor = (double*) calloc(N, sizeof(double));
+    Vert = (double*) calloc(N, sizeof(double));
     for (i = 0; i < N; i++) {
-        a[i] = (int*) calloc(N, sizeof(int));
-        b[i] = (int*) calloc(N, sizeof(int));
-        c[i] = (int*) calloc(N, sizeof(int));
+        matrix_1[i] = (double*) calloc(N, sizeof(double));
+        b[i] = (double*) calloc(N, sizeof(double)); //just to make it work properly
+        matrix_2[i] = (double*) calloc(N, sizeof(double));
+        e[i] = (double*) calloc(N, sizeof(double)); //just to make it work properly
+        matrix_3[i] = (double*) calloc(N, sizeof(double));
     }
 
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
-            *(*a + i * N + j) = k;
-            *(*b + i * N + j) = k;
+            *(*matrix_1 + i * N + j) = (rand() % RANGE) * pow(-1, rand() % 2);
+            *(*matrix_2 + i * N + j) = (rand() % RANGE) * pow(-1, rand() % 2);
             k++;
+            printf("%3.0f ", *(*matrix_1 + i * N + j));
         }
+        printf(" | ");
+        for (int j = 0; j < N; j++) {
+            printf("%3.0f ", *(*matrix_2 + i * N + j));
+        }
+        printf("\n");
     }
 
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
-            getHor(&Hor, a, i);
-            getVert(&Vert, a, j);
-            for (int k = 0; k < N; k++) {
-                printf("(%d) ", Vert[k]);
-                printf("%d ", Hor[k]);
-            }
-            printf("\n");
-            *(*c + i * N + j) = multpVect(Hor, Vert);
-            printf("%d\n ", *(*c + i * N + j));
+            getHor(&Hor, matrix_1, i);
+            getVert(&Vert, matrix_1, j);
+            *(*matrix_3 + i * N + j) = multpVect(Hor, Vert);
+            printf("%5.0f ", *(*matrix_3 + i * N + j));
         }
         printf("\n");
     }
