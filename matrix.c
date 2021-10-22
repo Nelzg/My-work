@@ -10,7 +10,7 @@
 #include <sys/stat.h>
 #include <time.h>
 
-#define N 1000
+#define N 3
 #define RANGE 20
 
 struct Struct {
@@ -44,18 +44,22 @@ int multpVect(double* Hor, double* Vert ) {
     return n;
 }
 
-void *thread(struct Struct* args) {
-    double* Hor = (double*) calloc(N, sizeof(double));
-    double* Vert = (double*) calloc(N, sizeof(double));
+void getResultMatrix(struct Struct* args, double* Hor, double* Vert) {
     for (int i = args->begin; i < args->end; i++) {
         for (int j = 0; j < N; j++) {
             getHor(&Hor, *(args -> matrix_1Pointer), i);
             getVert(&Vert, *(args -> matrix_2Pointer), j);
             *(*(args -> matrix_3Pointer) + i * N + j) = multpVect(Hor, Vert);
-            //printf("%5.0f ", *(*(args -> matrix_3Pointer) + i * N + j));
+            printf("%5.0f ", *(*(args -> matrix_3Pointer) + i * N + j));
         }
-        //printf("\n");
+        printf("\n");
     }
+}
+
+void *thread(struct Struct* args) {
+    double* Hor = (double*) calloc(N, sizeof(double));
+    double* Vert = (double*) calloc(N, sizeof(double));
+    getResultMatrix(args, Hor, Vert);
 }
 
 int main() {
@@ -101,8 +105,8 @@ int main() {
     int clock1 = clock();
     for (i = 0; i < numbCount * numbThreads; i++) {
         pthread_t thid;
-        Matrixes->begin = i;
-        Matrixes->end = i + numbCount;
+        Matrixes -> begin = i;
+        Matrixes -> end = i + numbCount;
         int result = pthread_create(&thid, (pthread_attr_t *) NULL, thread, Matrixes);
         pthread_join(thid, (void **) NULL);
         i = i + numbCount - 1;
@@ -110,15 +114,12 @@ int main() {
     printf("Time %ld", clock() - clock1);
     printf("\n");
     clock1 = clock();
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            getHor(&Hor, matrix_1, i);
-            getVert(&Vert, matrix_2, j);
-            *(matrix_3 + i * N + j) = multpVect(Hor, Vert);
-            //printf("%5.0f ", *(matrix_3 + i * N + j));
-        }
-        //printf("\n");
-    }
+
+    Matrixes -> begin = 0;
+    Matrixes -> end = N;
+
+    getResultMatrix(Matrixes, Hor, Vert);
+
     printf("Time %ld\n", clock() - clock1);
     free(matrix_1);
     free(matrix_2);
