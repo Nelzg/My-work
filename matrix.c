@@ -3,9 +3,22 @@
 #include <string.h>
 #include <math.h>
 #include <time.h>
+#include <pthread.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <time.h>
 
-#define N 3
-#define RANGE 100
+#define N 1000
+#define RANGE 20
+
+struct Struct {
+    double** matrix_1Pointer;
+    double** matrix_2Pointer;
+    double** matrix_3Pointer;
+    int begin,end;
+};
 
 void getHor(double** Hor,double* matrix, int i) {
     int k = 0;
@@ -31,15 +44,32 @@ int multpVect(double* Hor, double* Vert ) {
     return n;
 }
 
+void *thread(struct Struct* args) {
+    double* Hor = (double*) calloc(N, sizeof(double));
+    double* Vert = (double*) calloc(N, sizeof(double));
+    for (int i = args->begin; i < args->end; i++) {
+        for (int j = 0; j < N; j++) {
+            getHor(&Hor, *(args -> matrix_1Pointer), i);
+            getVert(&Vert, *(args -> matrix_2Pointer), j);
+            *(*(args -> matrix_3Pointer) + i * N + j) = multpVect(Hor, Vert);
+            //printf("%5.0f ", *(*(args -> matrix_3Pointer) + i * N + j));
+        }
+        //printf("\n");
+    }
+}
+
 int main() {
+    struct Struct* Matrixes;
+    int numbThreads;
+    int numbCount;
     double* matrix_1;
     double* matrix_2;
     double* matrix_3;
     double* Vert;
     double* Hor;
     int i, j, k;
-    k = 1;
-    matrix_1 = (double*) calloc(N *N, sizeof(double));
+
+    matrix_1 = (double*) calloc(N * N, sizeof(double));
     matrix_2 = (double*) calloc(N * N, sizeof(double));
     matrix_3 = (double*) calloc(N * N, sizeof(double));
     Hor = (double*) calloc(N, sizeof(double));
@@ -51,25 +81,45 @@ int main() {
         for (int j = 0; j < N; j++) {
             *(matrix_1 + i * N + j) = (random() % RANGE) * pow(-1, rand() % 2);
             *(matrix_2 + i * N + j) = (random() % RANGE) * pow(-1, rand() % 2);
-            k++;
-            printf("%3.0f ", *(matrix_1 + i * N + j));
+            //printf("%3.0f ", *(matrix_1 + i * N + j));
         }
-        printf(" | ");
+        //printf(" | ");
         for (int j = 0; j < N; j++) {
-            printf("%3.0f ", *(matrix_2 + i * N + j));
+            //printf("%3.0f ", *(matrix_2 + i * N + j));
         }
-        printf("\n");
+        //printf("\n");
     }
 
+    Matrixes->matrix_1Pointer = &matrix_1;
+    Matrixes->matrix_2Pointer= &matrix_2;
+    Matrixes->matrix_3Pointer = &matrix_3;
+
+    printf("Enter number of division on threads ");
+    scanf("%d", &numbThreads);
+    numbCount = N/numbThreads;
+    
+    int clock1 = clock();
+    for (i = 0; i < numbCount * numbThreads; i++) {
+        pthread_t thid;
+        Matrixes->begin = i;
+        Matrixes->end = i + numbCount;
+        int result = pthread_create(&thid, (pthread_attr_t *) NULL, thread, Matrixes);
+        pthread_join(thid, (void **) NULL);
+        i = i + numbCount - 1;
+    }
+    printf("Time %ld", clock() - clock1);
+    printf("\n");
+    clock1 = clock();
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
             getHor(&Hor, matrix_1, i);
-            getVert(&Vert, matrix_1, j);
+            getVert(&Vert, matrix_2, j);
             *(matrix_3 + i * N + j) = multpVect(Hor, Vert);
-            printf("%5.0f ", *(matrix_3 + i * N + j));
+            //printf("%5.0f ", *(matrix_3 + i * N + j));
         }
-        printf("\n");
+        //printf("\n");
     }
+    printf("Time %ld\n", clock() - clock1);
     free(matrix_1);
     free(matrix_2);
     free(matrix_3);
