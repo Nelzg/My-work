@@ -10,7 +10,13 @@
 #include <sys/stat.h>
 #include <time.h>
 
-#define N 3
+    //N = 10000/ Thread = 5000 Time > 30 min / Usuall Time = unkown
+   //N = 2000 / Thread = 1000 Time = 95 sec / Usuall Time = 92 sec
+  //N = 2000 / Thread = 1000 Time = 88 sec / Usuall Time = 91 sec
+ //N = 2000 / Thread = 100 Time = 86 sec  / Usuall Time = 86 sec
+//N = 2000 / Thread = 10 Time = 90 sec   / Usuall Time = 90 sec
+
+#define N 10000
 #define RANGE 20
 
 struct Struct {
@@ -50,9 +56,9 @@ void getResultMatrix(struct Struct* args, double* Hor, double* Vert) {
             getHor(&Hor, *(args -> matrix_1Pointer), i);
             getVert(&Vert, *(args -> matrix_2Pointer), j);
             *(*(args -> matrix_3Pointer) + i * N + j) = multpVect(Hor, Vert);
-            printf("%5.0f ", *(*(args -> matrix_3Pointer) + i * N + j));
+            //printf("%5.0f ", *(*(args -> matrix_3Pointer) + i * N + j));
         }
-        printf("\n");
+        //printf("\n");
     }
 }
 
@@ -111,7 +117,7 @@ int main() {
         pthread_join(thid, (void **) NULL);
         i = i + numbCount - 1;
     }
-    printf("Time %ld", clock() - clock1);
+    printf("Time %ld", (clock() - clock1)/CLOCKS_PER_SEC);
     printf("\n");
     clock1 = clock();
 
@@ -120,7 +126,7 @@ int main() {
 
     getResultMatrix(Matrixes, Hor, Vert);
 
-    printf("Time %ld\n", clock() - clock1);
+    printf("Time %ld\n", (clock() - clock1)/CLOCKS_PER_SEC);
     free(matrix_1);
     free(matrix_2);
     free(matrix_3);
