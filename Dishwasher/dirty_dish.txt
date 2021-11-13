@@ -1,0 +1,17 @@
+plate: 2
+plate: 5
+pan: 2
+fryingPan: 14
+plate: 1
+plate: 1
+plate: 1
+plate: 1
+plate: 1
+plate: 1
+plate: 1
+plate: 1
+plate: 1
+plate: 1
+pan: 4
+pan: 5
+fryingPan: 7
