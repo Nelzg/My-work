@@ -61,13 +61,12 @@ void *DryingThread(void* wet_dish) {
     int j,k;
     char buf[50];
     FILE *fp = fopen(fifo2, "r");
-    //int fd = open(fifo2, O_RDONLY);
     while (1) {
         funcGivePerm((*wet).semid, -1, 1);
         fgets(buf, 50, fp);
         k = 0;
-        for (j = 0; j < (*wet).dish_numb1; j++) {                   //|
-            if (strncmp((*wet).dish_type[j] ,buf, strlen(buf)-2) == 0) {            //| to do fix here
+        for (j = 0; j < (*wet).dish_numb1; j++) {                   
+            if (strncmp((*wet).dish_type[j] ,buf, strlen(buf)-2) == 0) {            
                 k = j;
                 j = (*wet).dish_numb1;
             } 
