@@ -10,9 +10,10 @@
 #include <sys/shm.h>
 #include <errno.h>
 #include <unistd.h>
+#include <assert.h>
 
 char* fifo1 = "7.txt";
-char* fifo2 = "8.txt";
+char* fifo2 = "Table.txt";
 struct DishInfo {
     int *dish_time;
     char **dish_type;
@@ -36,17 +37,19 @@ void funcGivePerm(int id, int token, int num) {
 void *CleaningThread(void* dirty_dish) {
     struct DishInfo *dirty = (struct DishInfo *)dirty_dish;
     int i = 0;
-    //int fd = open(fifo2, O_WRONLY);
+    int fd = open(fifo2, O_WRONLY);
     while (1) {
         funcGivePerm((*dirty).semid, -1, 0);
-        sleep((*dirty).dish_time[i]);
-      //  write(fd, (*dirty).dish_type[i], sizeof((*dirty).dish_type[i]));
-        printf("cleaned %s\n",(*dirty).dish_type[i]);
-        funcGivePerm((*dirty).semid, 1, 1);
         if ((*dirty).dish_numb1 == i) {
             printf("No dishes left for cleaning\n");
+            close(fd);
             return;
         }
+        sleep((*dirty).dish_time[i]);
+        write(fd, (*dirty).dish_type[i], sizeof((*dirty).dish_type[i] - 2));
+        printf("cleaned %s\n",(*dirty).dish_type[i]);
+        funcGivePerm((*dirty).semid, 1, 1);
+        
         i++;
     }
 }
@@ -54,45 +57,58 @@ void *CleaningThread(void* dirty_dish) {
 void *DryingThread(void* wet_dish) {
     struct DishInfo *wet = (struct DishInfo *)wet_dish;
     int i = 0;
-    //char buf[100];
-    //int fd = open(fifo2, O_RDONLY);
+    int j,k;
+    char buf[50];
+    int fd = open(fifo2, O_RDONLY);
     while (1) {
         funcGivePerm((*wet).semid, -1, 1);
-        //read(fd, buf, 100);
-
-        sleep((*wet).dish_time[i]);
-        printf("dryed %s\n",(*wet).dish_type[i]);
-        if (i == (*wet).dish_numb2) {
-            printf("No dishes left for drying\n");
-            return;
+        read(fd, buf, 50);
+        k = 0;
+        for (j = 0; j < (*wet).dish_numb1; j++) {                   //|
+            if (strcmp((*wet).dish_type[j] ,buf) != 0) {            //| to do fix here
+                k = j;
+            } 
+            else {
+                k = (*wet).dish_numb1;
+            }
+            printf("%s , %d %d yes\n", buf, k, j);
+            
         }
+        *buf = NULL;
+        sleep((*wet).dish_time[k]);
+        printf("dryed %s\n",(*wet).dish_type[k]);
         funcGivePerm((*wet).semid, 1, 0);
         i++;
+        if (i == (*wet).dish_numb2) {
+            printf("No dishes left for drying\n");
+            close(fd);
+            return;
+        }
     }
 
 }
 
 int getDishInfo(char *source, int **dish_time, char ***dish_type) {
     FILE* fp = fopen(source, "r");
-    char buf1[1000];
+    char buf1[50];
     long int numb;
     int space = ' ';
     int i = 0;
-    while (fgets(buf1, 1000, fp) != NULL) {  
+    while (fgets(buf1, 50, fp) != NULL) {  
         *dish_time = (int *) realloc(*dish_time, (i + 1) * sizeof(int));
         *dish_type = (char **) realloc(*dish_type, (i + 1) * sizeof(char*));
-        numb = strchr(buf1, space) - buf1;
+        numb = strchr(buf1, space) - buf1 - 1;
         *(*dish_type + i) = (char *) malloc(numb * sizeof(char));
         strncpy(*(*dish_type + i),buf1, numb);
         *(*dish_time + i) = atoi(strchr(buf1, space));
-        *(*(*dish_type + i) + numb - 1) = '\n';
         *(*(*dish_type + i) + numb) = '\0';
         i++; 
     }
-    return i - 1;
+    fclose(fp);
+    return i;
 }
 
-int main() {
+int main(int argc, int argv[]) {
     char *dirty_dish_source = "dirty_dish.txt";
     char *wet_dish_source = "wet_dish.txt";
     struct DishInfo dirty,wet;
@@ -138,5 +154,6 @@ int main() {
         free(wet.dish_type[i]);
     }
     free(wet.dish_type);
+    
     return 0;
 }
