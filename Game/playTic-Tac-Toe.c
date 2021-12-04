@@ -16,6 +16,8 @@ char wait[] = "Waiting for player\n";
 char next[] = "Next turn\n";
 char connect1[] = "Connected, you are 'X'";
 char connect2[] = "Connected, you are 'O'";
+char wrong[] = "Wrong move, try again!\n";
+char taken[] = "The spot is already taken, try again\n";
 
 int CheckIfWin(char *a, char p) {
     int i;
@@ -56,21 +58,19 @@ void ReadyFrame(char *a, char *b) {
         strcat(b,"\n+---+---+---+\n");
 }
 
-int MakeYourMove(char *a, char p, int x, int y) {
-    
-        if ((x > 2)||(x < 0)||(y > 2)||(y < 0)) {
-            printf("Wrong move, try again\n");
-        }
-        
-        if (a[3 * x + y] == ' ') {
-            a[3 * x + y] = p;
-           return 0;
-        }
-        else {
-            printf("The spot is already taken, try again\n");
-        }
-        
-    
+int MakeYourMove(char *a, char p, int x, int y, int sockfd, struct sockaddr_in cliaddr1, int clilen1) {
+    if ((x > 2)||(x < 0)||(y > 2)||(y < 0)) {
+        sendto(sockfd, wrong, strlen(wrong), 0, (struct sockaddr *) &cliaddr1, clilen1);
+        return 1;
+    }
+    if (a[3 * x + y] == ' ') {
+        a[3 * x + y] = p;
+        sendto(sockfd, wait, strlen(wait), 0, (struct sockaddr *) &cliaddr1, clilen1);
+    }
+    else {
+        sendto(sockfd, taken, strlen(taken), 0, (struct sockaddr *) &cliaddr1, clilen1);
+        return 1;
+    }
     return 0;
 }
 
@@ -97,15 +97,17 @@ void Game(char *b, char *a,char *line, int sockfd, int clilen1, int clilen2, str
         }
         sendto(sockfd, turn, strlen(turn), 0, (struct sockaddr *) &cliaddr1, clilen1);
         sendto(sockfd, wait, strlen(wait), 0, (struct sockaddr *) &cliaddr2, clilen2);
-        recvfrom(sockfd, line, 5, 0, (struct sockaddr *) &cliaddr1, &clilen1);
-        printf("%d %d", line[0]-'0',line[2]-'0');
-        MakeYourMove(a, player1,line[0]-'0',line[2]-'0');
+        int n = 1;
+        while(n) {
+            recvfrom(sockfd, line, 5, 0, (struct sockaddr *) &cliaddr1, &clilen1);
+            n = MakeYourMove(a, player1,line[0]-'0',line[2]-'0', sockfd, cliaddr1, clilen1);
+        }
+        
 }
-
 
 int main() {
     int i;
-    char a[9],b[180]="";
+    char a[9],b[180];
     int n = 1;
     for (i = 0; i < 9; i++) {
         a[i] = ' ';
@@ -122,24 +124,20 @@ int main() {
         perror(NULL);
         exit(1);
     }
-    
     if(bind(sockfd, (struct sockaddr *) &servaddr, sizeof(servaddr)) < 0){
         perror(NULL);
         close(sockfd);
         exit(1);
     }
-    
     clilen1 = sizeof(cliaddr1); 
     clilen2 = sizeof(cliaddr2);
-    
     if((n = recvfrom(sockfd, line, 5, 0, (struct sockaddr *) &cliaddr1, &clilen1)) < 0){
         perror(NULL);
         close(sockfd);
         exit(1);
     }
     sendto(sockfd, connect1, strlen(connect1), 0, (struct sockaddr *) &cliaddr1, clilen1);
-    printf("Connected\n");
-        
+    printf("Connected\n"); 
     if((n = recvfrom(sockfd, line, 5, 0, (struct sockaddr *) &cliaddr2, &clilen2)) < 0){
         perror(NULL);
         close(sockfd);

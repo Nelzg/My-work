@@ -11,7 +11,7 @@
 int main(int argc, char **argv) {
     int sockfd; 
     int n, len; 
-    char sendline[5], recvline[180], turn[] = "Your turn!\n", loose[] = "You loose!\n", win[] = "You win!\n", stalemate[] = "Stalemate!\n"; ; 
+    char sendline[5], recvline[180], turn[] = "Your turn!\n", loose[] = "You loose!\n", win[] = "You win!\n", stalemate[] = "Stalemate!\n", wait[] = "Waiting for player\n"; 
     struct sockaddr_in servaddr, cliaddr; 
     if(argc != 2){
         printf("Usage: a.out <IP address>\n");
@@ -61,8 +61,13 @@ int main(int argc, char **argv) {
         recvfrom(sockfd, recvline, 180, 0, (struct sockaddr *) NULL, NULL);
         printf("%s", recvline);
         if (strcmp(turn, recvline) == 0) {
-            gets(sendline);
-            sendto(sockfd, sendline, strlen(sendline) + 1, 0, (struct sockaddr *) &servaddr, sizeof(servaddr));
+            while(strcmp(wait, recvline) != 0) {
+                gets(sendline);
+                sendto(sockfd, sendline, strlen(sendline) + 1, 0, (struct sockaddr *) &servaddr, sizeof(servaddr));
+                bzero(recvline, 180);
+                recvfrom(sockfd, recvline, 180, 0, (struct sockaddr *) NULL, NULL);
+                printf("%s\n", recvline);
+            }
         }
     }
     close(sockfd);
