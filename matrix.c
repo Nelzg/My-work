@@ -10,16 +10,16 @@
 #include <sys/stat.h>
 #include <time.h>
 
-    
-        //N = 2000 / Thread = 10 Time = 91 sec  / Usuall Time = 87 sec
-       //N = 2000 / Thread = 4 Time  94 sec    / Usuall Time = 90 sec
-      //N = 1500 / Thread = 100 Time  36 sec  / Usuall Time = 34 sec
-     //N = 1500 / Thread = 10 Time  36 sec   / Usuall Time = 35 sec
-    //N = 1500 / Thread = 4 Time  33 sec    / Usuall Time = 35 sec
-   //N = 1000 / Thread = 1000 Time = 9 sec / Usuall Time = 9 sec
-  //N = 1000 / Thread = 100 Time = 9 sec  / Usuall Time = 9 sec
- //N = 1000 / Thread = 10 Time = 9 sec   / Usuall Time = 9 sec
-//N = 1000 / Thread = 4 Time = 10 sec   / Usuall Time = 11 sec
+         //N = 1500 / Thread = 500 Time = 92 sec / Usuall Time = 58 sec
+        //N = 1500 / Thread = 150 Time = 91 sec / Usuall Time = 58 sec
+       //N = 1500 / Thread = 100 Time = 93 sec / Usuall Time = 58 sec
+      //N = 1500 / Thread = 25 Time = 94 sec  / Usuall Time = 58 sec
+     //N = 1500 / Thread = 10 Time = 92 sec  / Usuall Time = 57 sec
+    //N = 1500 / Thread = 5 Time = 93 sec   / Usuall Time = 58 sec
+   //N = 1500 / Thread = 4 Time = 95 sec   / Usuall Time = 58 sec
+  //N = 1500 / Thread = 3 Time = 75 sec   / Usuall Time = 58 sec
+ //N = 1500 / Thread = 2 Time = 59 sec   / Usuall Time = 58 sec
+//N = 1500 / Thread = 1 Time = 58 sec   / Usuall Time = 58 sec
 
 #define N 1500
 #define RANGE 20
